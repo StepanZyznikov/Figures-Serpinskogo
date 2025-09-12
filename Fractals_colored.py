@@ -12,6 +12,13 @@ import numpy as np
 import copy
 
 
+## Classes
+class Coordinates:
+    def __init__(self, x, y):
+        self.x = x 
+        self.y = y
+
+
 ## Constants
 CANVAS_SIZE = 1
 CANVAS_SIZE_INCH = 7
@@ -31,6 +38,10 @@ travel_distance = 2 # The travel distance
 def wrapped_input(data_type=str, input_message=''):
     return data_type(input(input_message))
 
+def travel_dist_calc(dot1: Coordinates, dot2: Coordinates, travel_dist_coef):
+    return Coordinates(dot1.x * (1-travel_dist_coef) + dot2.x * travel_dist_coef,
+                       dot1.y * (1-travel_dist_coef) + dot2.y * travel_dist_coef)
+
 def dot_generation(vertex_coords, jump_distance, vertex_number, travel_distance=0.5, start_coords=[0,0]):
     rng = np.random.default_rng()
     prev_coords = start_coords
@@ -45,7 +56,6 @@ def dot_generation(vertex_coords, jump_distance, vertex_number, travel_distance=
                                                     (prev_coords[1] + vertex_coords[curr_vertex_index][1])*travel_distance])
         prev_coords = dot_coords[curr_vertex_index][0][-1]
     return dot_coords
-
 
 
 ## Inputs
@@ -72,17 +82,16 @@ vertex_coords = [[np.cos(2*np.pi*i/vertex_number), np.sin(2*np.pi*i/vertex_numbe
 
 
 # starting position generation
-start_coords = [0, 0]
+start_coords = Coordinates[0, 0]
 dot_coords = dot_generation(vertex_coords, jump_distance, vertex_number, travel_distance, start_coords)
 
 
 # plotting
 ax.scatter(start_coords[0], start_coords[1], s=10, c=START_COLOR)
 for i in range(vertex_number):
-    ax.scatter([j[0] for j in dot_coords[i][0]], [j[1] for j in dot_coords[i][0]], s=0.002, c=VERTEX_COLORS[i])
+    ax.scatter([j[0] for j in dot_coords[i][0]], [j[1] for j in dot_coords[i][0]], s=10**3/DOT_NUMBER, c=VERTEX_COLORS[i])
 
 for i in range(vertex_number):
     ax.scatter(vertex_coords[i][0], vertex_coords[i][1], s=50, c=VERTEX_COLORS[i])
-
 
 plt.show()
