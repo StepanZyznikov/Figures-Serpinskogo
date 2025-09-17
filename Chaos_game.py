@@ -34,6 +34,7 @@ CANVAS_SIZE = 1
 CANVAS_SIZE_INCH = 7
 DOT_NUMBER = 10**5
 
+
 # Functions
 def wrapped_input(data_type=str, input_message=''):
     return data_type(input(input_message))
