@@ -1,6 +1,4 @@
-"""Fractal generator.
-travel_distance
-This script generates a bunch of fractals using random and partial distance travel.
+""" Chaos game python implementation.
 
 Stepan Zyznikov, McMaster, 2025"""
 
@@ -9,6 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np
 import copy
+
 
 # Classes
 class Coordinates:
@@ -25,6 +24,37 @@ DOT_NUMBER = 10**5
 # Functions
 def wrapped_input(data_type=str, input_message=''):
     return data_type(input(input_message))
+
+
+def vertex_color_generation(vertex_number, mode):
+    cmap = mpl.colormaps["plasma"]
+    if vertex_number == 4 and mode == 4:
+        vertex_colors = [cmap(i/8) for i in range(8)]
+    else:
+        vertex_colors = [cmap(i/vertex_number) for i in range(vertex_number)]
+    vertex_colors.append("#000000")
+    return vertex_colors
+
+
+def vertex_coordinates_generation(vertex_number):
+    if vertex_number == 4:
+        vertex_coords = [Coordinates(1, 1), Coordinates(-1, 1), 
+                         Coordinates(-1, -1), Coordinates(1, -1)]
+    else:
+        vertex_coords = [Coordinates(np.cos(2*np.pi*i/vertex_number), 
+                                     np.sin(2*np.pi*i/vertex_number)) for i in range(1, vertex_number + 1)]
+    return vertex_coords
+
+
+def canvas_sizing(vertex_coords):
+    cmin = Coordinates(1, 1)
+    cmax = Coordinates(-1, -1)
+    for curr_vertex in vertex_coords:
+        if curr_vertex.x > cmax.x: cmax.x = curr_vertex.x
+        if curr_vertex.y > cmax.y: cmax.y = curr_vertex.y
+        if curr_vertex.x < cmin.x: cmin.x = curr_vertex.x
+        if curr_vertex.y < cmin.y: cmin.y = curr_vertex.y
+    return [cmin, cmax]
 
 
 def kissing_ratio(vertex_number): # https://www.sciencedirect.com/science/article/pii/S096007792100494X
@@ -118,35 +148,29 @@ def modded_dot_generation(vertex_coords, mode): # Restricted chaos game and quaz
 
 
 # Inputs
-vertex_number = wrapped_input(int, "Enter integer vertex number:")
-mode = wrapped_input(
-    int, "Do you want to generate a regular fractal? 0 for yes.")
-if mode == 3:  # Quazi-stable fractal generation
-    CANVAS_SIZE = 1000
-
-
-# plot
-plt.style.use('_mpl-gallery')
-fig = plt.figure(figsize=(CANVAS_SIZE_INCH, CANVAS_SIZE_INCH))
-ax = plt.subplot()
-ax.set(xlim=(-CANVAS_SIZE, CANVAS_SIZE), xticks=[],
-       ylim=(-CANVAS_SIZE, CANVAS_SIZE), yticks=[])
+vertex_number = wrapped_input(int, "Enter integer vertex number bigger that 2: ")
+while vertex_number <= 2:
+    vertex_number = wrapped_input(int, "Enter integer vertex number bigger that 2: ")
+mode = wrapped_input(int, "Do you want to generate a regular fractal? 0 for yes. ")
 
 
 # vertex initialization
-cmap = mpl.colormaps["plasma"]
-if vertex_number == 4 and mode == 4:
-    vertex_colors = [cmap(i/8) for i in range(8)]
-else:
-    vertex_colors = [cmap(i/vertex_number) for i in range(vertex_number)]
-vertex_colors.append("#000000")
+vertex_colors = vertex_color_generation(vertex_number, mode)
+vertex_coords = vertex_coordinates_generation(vertex_number)
 
-if vertex_number == 4:
-    vertex_coords = [Coordinates(
-        1, 1), Coordinates(-1, 1), Coordinates(-1, -1), Coordinates(1, -1)]
-else:
-    vertex_coords = [Coordinates(np.cos(2*np.pi*i/vertex_number), np.sin(
-        2*np.pi*i/vertex_number)) for i in range(1, vertex_number + 1)]
+
+# plot
+cmin = canvas_sizing(vertex_coords)[0]
+cmax = canvas_sizing(vertex_coords)[1]
+if mode == 3:
+    cmin = Coordinates(-1000, -1000)
+    cmax = Coordinates(1000, 1000)
+
+plt.style.use('_mpl-gallery')
+fig = plt.figure(figsize=(CANVAS_SIZE_INCH, CANVAS_SIZE_INCH))
+ax = plt.subplot()
+ax.set(xlim=(cmin.x, cmax.x), xticks=[],
+       ylim=(cmin.y, cmax.y), yticks=[])
 
 
 # starting position generation
