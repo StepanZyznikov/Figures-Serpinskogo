@@ -1,6 +1,19 @@
 """ Chaos game python implementation.
 
-Stepan Zyznikov, McMaster, 2025"""
+The basic concept is simple: 
+You decide how many vertices you want to have (# Inputs)
+You choose a set of points on plane and color them (# Vertex initializaiton)
+You create a canvas for the vertices so they fit it perfectly (# Canvas creation)
+
+And then you play the Chaos Game itself:
+You have N vertices and a starting position.
+You choose one random vertex, move SOME distance from starting position to chosen vertex and save coordinates of the place you stopped at.
+Then you choose one random vertex again, travel some distance to it and save the coordinates.
+This actions is repeated DOT_NUMBER times.
+
+After that you plot all the dots on the canvas.
+
+Stepan Zyznikov, McMaster, 2025 """
 
 # Libraries
 import matplotlib.pyplot as plt
@@ -94,6 +107,7 @@ def default_dot_generation(vertex_coords): # https://en.wikipedia.org/wiki/Chaos
         prev_coords = dot_coords[curr_vertex_index][-1]
     return dot_coords
 
+
 def modded_dot_generation(vertex_coords, mode): # Restricted chaos game and quazi-stable chaos game
     vertex_number = len(vertex_coords)
 
@@ -154,12 +168,12 @@ while vertex_number <= 2:
 mode = wrapped_input(int, "Do you want to generate a regular fractal? 0 for yes. ")
 
 
-# vertex initialization
+# Vertex initialization
 vertex_colors = vertex_color_generation(vertex_number, mode)
 vertex_coords = vertex_coordinates_generation(vertex_number)
 
 
-# plot
+# Canvas creation
 cmin = canvas_sizing(vertex_coords)[0]
 cmax = canvas_sizing(vertex_coords)[1]
 if mode == 3:
@@ -173,7 +187,7 @@ ax.set(xlim=(cmin.x, cmax.x), xticks=[],
        ylim=(cmin.y, cmax.y), yticks=[])
 
 
-# starting position generation
+# Dot generation position generation
 if mode == 0:
     dot_coords = default_dot_generation(vertex_coords)
 else:
@@ -184,5 +198,7 @@ else:
 for i in range(len(dot_coords)):
     ax.scatter([j.x for j in dot_coords[i]], [
                j.y for j in dot_coords[i]], s=10**3/DOT_NUMBER, c=vertex_colors[i])
+
+plt.show()s[i]], s=10**3/DOT_NUMBER, c=vertex_colors[i])
 
 plt.show()
